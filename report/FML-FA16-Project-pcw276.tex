@@ -1,0 +1,154 @@
+\documentclass[12pt]{amsart}
+
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{times}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage[psamsfonts]{amssymb}
+\usepackage{amstext}
+\usepackage{amsthm}
+\usepackage{latexsym}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{enumerate}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{url}
+\usepackage{dsfont}
+
+\makeatletter
+\newtheorem*{rep@theorem}{\rep@title}
+\newcommand{\newreptheorem}[2]{%
+\newenvironment{rep#1}[1]{%
+ \def\rep@title{#2 \ref{##1}}%
+ \begin{rep@theorem}}%
+ {\end{rep@theorem}}}
+\makeatother
+
+\hypersetup{
+  colorlinks   = true,
+  urlcolor     = blue,
+  linkcolor    = blue,
+  citecolor   = blue
+}
+
+\let\Pr\undefined
+\def\Rset{\mathbb{R}}
+\def\Nset{\mathbb{N}}
+\def\vcdim{\text{VCdim}}
+\def\pdim{\text{Pdim}}
+\DeclareMathOperator*{\E}{\mathbb{E}}
+\DeclareMathOperator*{\Pr}{\mathbb{P}}
+\DeclareMathOperator*{\argmax}{\rm argmax}
+\DeclareMathOperator*{\argmin}{\rm argmin}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\range}{range}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\Tr}{Tr}
+\providecommand{\norm}[1]{\| #1 \|}
+\providecommand{\frobp}[2]{\langle#1, #2\rangle_F}
+\def\dqed{\relax\tag*{\qed}}
+
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\iprod}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\h}{\widehat}
+\newcommand{\tl}{\widetilde}
+\newcommand{\Alpha}{{\boldsymbol \alpha}}
+\newcommand{\mat}[1]{{\mathbf #1}}
+\newcommand{\be}{\mat{e}}
+\newcommand{\bu}{\mat{u}}
+\newcommand{\bh}{\mat{h}}
+\newcommand{\n}{\mat{n}}
+\newcommand{\K}{\mat{K}}
+\newcommand{\N}{\mat{N}}
+\newcommand{\0}{\mat{0}}
+\newcommand{\w}{\mat{w}}
+\newcommand{\x}{\mat{x}}
+\newcommand{\cB}{\mathcal{B}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\cX}{\mathcal{X}}
+\newcommand{\Ind}{\mathds{1}}
+\newcommand{\1}{\mathds{1}}
+\newcommand{\R}{\mathfrak{R}}
+\newcommand{\e}{\epsilon}
+\newcommand{\EQ}{\gets}
+\newcommand{\wt}{\widetilde}
+\newcommand{\ssigma}{{\boldsymbol \sigma}}
+\newcommand{\tts}{\tt \small}
+\newcommand{\TO}{\mbox{ {\bf to }}}
+
+\newtheorem{theorem}{Theorem}
+\newreptheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newreptheorem{lemma}{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newreptheorem{corollary}{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newreptheorem{proposition}{Proposition}
+
+\newcommand{\ignore}[1]{}
+
+
+\title[Q-Learning in Axelrod's IPD Tournament]
+{Q-Learning in Axelrod's IPD Tournament}
+
+\begin{document}
+
+\begin{abstract}
+  In this paper I replicate and advance the experimental work done by Sandholm, Tuomas W., and Robert H. Crites (Biosystems 37.1 (1996): 147-166) into evaluating the use of reinforcement learning techniques in the iterated prisoner's dilemma (IPD).  Specifically, I further their investigation of the impact of varying the learning rate, discount rate, and exploration schemes of q-learning strategies for the IPD.  Additionally, where their work stopped at examining IPD engagement between two individual strategies, I have extended my experimentation to cover the more general setting of an IPD-tournament as popularized by Robert Axelrod in his 1984 book: The evolution of Cooperation.
+
+\end{abstract}
+
+\maketitle
+
+\section{Motivation}
+In multi-agent settings there is an especially interesting class of situations in which individuals derive maximum benefit from pursuing one course of action, however, mass-adoption of this policy, although rational at the individual level, leads to an overall suboptimal outcome for all members in the group.  Such situations are sometimes referred to as "collective action" type problems.  The storied, and much cited,  example is the so-called Tragedy of the Commons.   There are many situations in life where individuals  may have a  expected payoff for self-interested behavior   and the general population largely rely on polls and
+predictions made by various experts for the prediction of electoral
+results.  The failure of recent predictions made by such experts in
+the United Kingdom and the United States motivates the search for
+better tools and techniques. This paper presents a series of
+techniques based on on-line learning to tackle this problem.
+
+
+\section{Preliminaries} 
+\label{sec:preliminaries}
+
+Let $I \subseteq \Rset$ be an open interval and $f\colon I \to \Rset$
+a convex function. It is known that $f$ is Lipschitz continuous on any
+interval $[a, b] \subset I$, $f$ admits both left and right
+derivatives $f'_-$ and $f'_+$ over $I$, both non-decreasing, and 
+$f$ is differentiable everywhere except for a set that is at most
+countable.
+
+\section{Taylor-type theorems}
+
+
+
+\begin{lemma}
+\label{lemma:absolute}
+Let $I \subseteq \Rset$ be an open interval and $f\colon I \to \Rset$
+a convex function. Then, the following holds for all $a, b \in I$:
+\begin{equation*}
+f(b) - f(a) = \int_a^b f'(t)\, dt = \int_a^b f'_+(t)\, dt = \int_a^b f'_-(t)\, dt.
+\end{equation*}
+\end{lemma}
+
+\begin{proof}
+  The result are based on \citep{MohriRostamizadehTalwalkar2012}.
+  Since $f$ is Lipschitz continuous over the closed interval in $I$
+  containing $a$ and $b$, it is absolutely continuous, which proves
+  the first equality. The second equality is clear for Lebesgue
+  integrals since $f'(t) = f'_+(t) = f'_-(t)$ for all but at most a
+  countable set of points.
+\end{proof}
+
+
+\bibliographystyle{abbrv} 
+\bibliography{fml2016-sample}
+\end{document}
