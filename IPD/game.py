@@ -10,6 +10,9 @@ class Action(Enum):
 
 
 class GameHistory(object):
+    '''
+    class that stores 
+    '''
 
     def __init__(self, order, **kwargs):
         games = kwargs.get('games', None)
@@ -24,7 +27,7 @@ class GameHistory(object):
                     )
             self.history = collections.deque(games, order)
         else:
-            self.history = kwargs.get('games', collections.deque([], order))
+            self.history = collections.deque([], order)
 
     def add_game(self, p1_action, p2_action):
         self.history.append((p1_action, p2_action))
